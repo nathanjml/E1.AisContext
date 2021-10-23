@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PackageId>E1Infrastructure.AisContext</PackageId>
+    <Authors>Nathan Murphy</Authors>
+    <Company>Turner Industries</Company>
+    <Product>E1Infrastructure.AisContext</Product>
+    <Description>Enables rapid development of API's requiring access to Oracle's JD Edwards EnterpriseOne system via Orchestrator or AIS requests. Includes</Description>
+    <Copyright>Turner Industries</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Turner.Infrastructure.Mediator" Version="1.0.19" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
