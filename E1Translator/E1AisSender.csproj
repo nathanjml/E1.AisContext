@@ -8,7 +8,9 @@
     <Product>E1Infrastructure.AisContext</Product>
     <Description>Enables rapid development of API's requiring access to Oracle's JD Edwards EnterpriseOne system via Orchestrator or AIS requests. Includes</Description>
     <Copyright>Turner Industries</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/nathanjml/E1.AisContext</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/nathanjml/E1.AisContext</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="LICENSE">
+    <None Include="license\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
