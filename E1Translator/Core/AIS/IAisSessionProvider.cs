@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
+using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.AIS
 {
@@ -43,7 +43,7 @@ namespace E1Translator.Core.AIS
                     Password = _settings.AisPassword
                 });
 
-                _session = tokenResponse.Data;
+                _session = tokenResponse.Result;
             }
 
             return _session;
@@ -59,7 +59,7 @@ namespace E1Translator.Core.AIS
                     Token = _session.Token
                 });
 
-            return (!validationResponse.HasErrors && validationResponse.Data);
+            return (!validationResponse.HasErrors && validationResponse.Result);
         }
     }
 }

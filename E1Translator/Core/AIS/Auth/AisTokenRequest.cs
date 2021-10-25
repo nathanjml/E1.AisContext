@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
+using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.AIS.Auth
 {
@@ -46,7 +47,7 @@ namespace E1Translator.Core.AIS.Auth
             //_logger = logger;
         }
 
-        public async Task<Response<AisSessionInfo>> HandleAsync(AisTokenRequest request)
+        public async Task<Response<AisSessionInfo>> HandleAsync(AisTokenRequest request, CancellationToken ct)
         {
             try
             {
@@ -76,19 +77,18 @@ namespace E1Translator.Core.AIS.Auth
 
                     var session = new AisSessionInfo
                     {
-                        Token = authResponse.Data.UserInfo.Token,
+                        Token = authResponse.Result.UserInfo.Token,
                         DeviceName = request.Device
                     };
 
                     return session.AsResponse();
                 }
-
-                return Error.AsResponse<AisSessionInfo>(GetErrorMessage(responseContent));
+                return new Error {ErrorMessage = GetErrorMessage(responseContent)}.AsResponse<AisSessionInfo>();
             }
             catch (Exception e)
             {
                 //_logger.Fatal(e, "{Message:l}", e.Message);
-                return Error.AsResponse<AisSessionInfo>("AIS Server currently unavailable. Please contact the help desk if problem persists.");
+                return new Error { ErrorMessage = "AIS Server currently unavailable. Please contact the help desk if problem persists." }.AsResponse<AisSessionInfo>(); ;
             }
         }
 

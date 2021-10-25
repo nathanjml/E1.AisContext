@@ -1,10 +1,8 @@
 ﻿using E1Translator.Core.AIS;
 using E1Translator.Core.Extensions;
-using FluentValidation;
 using SimpleInjector;
 using System.Linq;
 using System.Reflection;
-using Turner.Infrastructure.Mediator;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
 
 namespace E1Translator.Core.Config

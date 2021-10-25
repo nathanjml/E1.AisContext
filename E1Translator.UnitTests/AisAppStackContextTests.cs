@@ -1,11 +1,10 @@
 ﻿using E1Translator.Core.AIS;
 using E1Translator.Core.Builders;
-using E1Translator.Core.Common;
 using NSubstitute;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
+using UnstableSort.Crudless.Mediator;
 using static E1Translator.Core.AIS.E1;
 
 namespace E1Translator.UnitTests

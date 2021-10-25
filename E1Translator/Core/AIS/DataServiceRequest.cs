@@ -1,5 +1,4 @@
 ﻿using E1Translator.Core.Config;
-using E1Translator.Core.Extensions;
 using FluentValidation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -8,8 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
+using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.AIS
 {
@@ -39,7 +39,7 @@ namespace E1Translator.Core.AIS
         }
 
         public async Task<Response<AisResponse<TAisResponse>>> HandleAsync(
-            DataServiceRequest<TAisResponse> request)
+            DataServiceRequest<TAisResponse> request, CancellationToken cancellationToken)
         {
             var session = await _tokenProvider.GetSession();
             request.AisRequest.Token = session.Token;
@@ -91,8 +91,8 @@ namespace E1Translator.Core.AIS
                     return result.AsResponse();
                 }
             }
-
-            return Error.AsResponse<AisResponse<TAisResponse>>(getErrorMessage(responseContent));
+            var error = new Error { ErrorMessage = getErrorMessage(responseContent) };
+            return error.AsResponse<AisResponse<TAisResponse>>();
         }
 
         private AisResponse<TAisResponse> CombineResults(AisGridData<TAisResponse> a

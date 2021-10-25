@@ -6,8 +6,9 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
+using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.AIS.Auth
 {
@@ -40,7 +41,7 @@ namespace E1Translator.Core.AIS.Auth
             _http.BaseAddress = new Uri(settings.AisBaseUrl);
         }
 
-        public async Task<Response<bool>> HandleAsync(AisTokenValidationRequest request)
+        public async Task<Response<bool>> HandleAsync(AisTokenValidationRequest request, CancellationToken ct)
         {
             if (request.Token == string.Empty)
                 return false.AsResponse();

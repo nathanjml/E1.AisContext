@@ -2,8 +2,8 @@
 using E1Translator.Core.Common;
 using System;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
+using UnstableSort.Crudless.Mediator;
 using static E1Translator.Core.AIS.E1;
 
 namespace E1Translator.Core.AIS
@@ -51,14 +51,14 @@ namespace E1Translator.Core.AIS
         public async override Task<BaseAisContext<T, AisResponse<R>>> Then<T, R>(Func<AisResponse<TAisResponse>, Task<T>> action) 
         {
             var response = await Mediator.HandleAsync(Request);
-            var result2 = await action(response.Data);
-            return Next<T, R>(result2, response.Data);
+            var result2 = await action(response.Result);
+            return Next<T, R>(result2, response.Result);
         }
 
         public async override Task<BaseAisContext<TRequest, AisResponse<TAisResponse>>> Then(Func<AisResponse<TAisResponse>, Task> action)
         {
             var response = await Mediator.HandleAsync(Request);
-            await action(response.Data);
+            await action(response.Result);
             
             var type = Request.GetType();
             if(type.Name == typeof(AppStackRequest<>).Name)

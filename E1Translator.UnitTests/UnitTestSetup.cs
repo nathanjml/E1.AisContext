@@ -7,7 +7,6 @@ using SimpleInjector.Lifestyles;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Turner.Infrastructure.Mediator.Configuration;
 
 namespace E1Translator.UnitTests
 {
@@ -28,7 +27,7 @@ namespace E1Translator.UnitTests
             initializer.UseAisSessionProvider(NSubstitute.Substitute.For<IAisSessionProvider>(), Lifestyle.Scoped)
                 .Initialize();
 
-            container.ConfigureMediator(new[] { Assembly.GetExecutingAssembly() });
+            //container.ConfigureMediator(new[] { Assembly.GetExecutingAssembly() });
 
             Container = container;
 

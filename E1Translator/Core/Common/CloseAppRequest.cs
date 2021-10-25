@@ -1,7 +1,8 @@
 ﻿using E1Translator.Core.Builders;
+using System.Threading;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
+using UnstableSort.Crudless.Mediator;
 using static E1Translator.Core.AIS.E1;
 
 namespace E1Translator.Core.Common
@@ -36,7 +37,7 @@ namespace E1Translator.Core.Common
             _mediator = mediator;
         }
 
-        public async Task<Response<AisResponse<NoResponse>>> HandleAsync(CloseAppRequest request)
+        public async Task<Response<AisResponse<NoResponse>>> HandleAsync(CloseAppRequest request, CancellationToken ct)
         {
             var builder = new AppStackBuilder(request.Form,
                 request.Version,

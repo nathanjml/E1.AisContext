@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Turner.Infrastructure.Mediator;
-using Turner.Infrastructure.Mediator.Decorators;
+using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator
 {
@@ -102,7 +102,7 @@ namespace E1Translator
             _tokenProvider = tokenProvider;
         }
 
-        public async Task<Response<OrchestrationResponse>> HandleAsync(OrchestrationRequest request)
+        public async Task<Response<OrchestrationResponse>> HandleAsync(OrchestrationRequest request, CancellationToken ct)
         {
             _http.BaseAddress = new Uri(_settings.AisBaseUrl);
 
@@ -133,7 +133,7 @@ namespace E1Translator
                 return result.AsResponse();
             }
 
-            return Error.AsResponse<OrchestrationResponse>(GetErrorMessage(responseContent));
+            return new Error { ErrorMessage = GetErrorMessage(responseContent)}.AsResponse<OrchestrationResponse>();
         }
 
         private OrchestrationResponse ParseContent(string content)
@@ -172,7 +172,7 @@ namespace E1Translator
 
         public static bool HasErrors(Response<OrchestrationResponse> response)
         {
-            return response.HasErrors || response.Data.HasErrors;
+            return response.HasErrors || response.Result.HasErrors;
         }
 
         private static string ExtractMobileMessage(string error)
