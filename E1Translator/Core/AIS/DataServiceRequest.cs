@@ -9,10 +9,12 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnstableSort.Crudless.Integration.EntityFrameworkCore.Transactions;
 using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.AIS
 {
+    [NoTransaction]
     public class DataServiceRequest<TAisResponse>
             : IRequest<AisResponse<TAisResponse>>
     {

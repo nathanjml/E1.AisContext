@@ -11,11 +11,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnstableSort.Crudless.Integration.EntityFrameworkCore.Transactions;
 using UnstableSort.Crudless.Mediator;
 
 namespace TurnerTablet.Core.Scaffolding.Features.Ais
 {
     [DoNotValidate]
+    [NoTransaction]
     public class AppStackRequest<TAisResponse>
         : IRequest<AisResponse<TAisResponse>>
     {

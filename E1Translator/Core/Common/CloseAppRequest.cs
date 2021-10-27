@@ -2,11 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
+using UnstableSort.Crudless.Integration.EntityFrameworkCore.Transactions;
 using UnstableSort.Crudless.Mediator;
 using static E1Translator.Core.AIS.E1;
 
 namespace E1Translator.Core.Common
 {
+    [NoTransaction]
+    [DoNotValidate]
     public class CloseAppRequest : IRequest<AisResponse<NoResponse>>
     {
         public string Form { get; set; }

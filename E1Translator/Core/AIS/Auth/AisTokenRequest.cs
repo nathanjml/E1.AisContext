@@ -3,15 +3,16 @@ using FluentValidation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using UnstableSort.Crudless.Integration.EntityFrameworkCore.Transactions;
 using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.AIS.Auth
 {
+    [NoTransaction]
     public class AisTokenRequest : IRequest<AisSessionInfo>
     {
         public string Username { get; set; }

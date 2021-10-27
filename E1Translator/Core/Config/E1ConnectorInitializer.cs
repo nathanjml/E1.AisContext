@@ -1,9 +1,14 @@
 ﻿using E1Translator.Core.AIS;
+using E1Translator.Core.Common;
 using E1Translator.Core.Extensions;
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using SimpleInjector;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
+using UnstableSort.Crudless.Mediator;
 
 namespace E1Translator.Core.Config
 {
@@ -31,18 +36,42 @@ namespace E1Translator.Core.Config
             _container.Register(typeof(AisAppStackRequestHandler<>), assemblies);
             _container.Register(typeof(AisContext<,>));
 
-            //void RegisterDataServiceRequestHandler<TAisResponse>() =>
-            //    container.Register(typeof(IRequestHandler<DataServiceRequest<TAisResponse>, AisResponse<TAisResponse>>),
-            //        typeof(AisDataServiceRequestHandler<TAisResponse>));
+            _container.Register(typeof(IRequestHandler<,>), GetType().Assembly);
+            _container.Register(typeof(IRequestHandler<>), GetType().Assembly);
+            _container.Register(typeof(IValidator<>), GetType().Assembly);
+            //_container.RegisterConditional(typeof(IRequestHandler<,>), typeof(CloseAppRequestHandler), c => !c.Handled);
+            //_container.RegisterConditional(typeof(IRequestHandler<,>), typeof(AisAppStackRequestHandler<>), c => !c.Handled);
+            _container.ResolveUnregisteredType += Container_ResolveUnregisteredType;
+        }
 
-            //void RegisterDataServiceValidator<TAisResponse>() =>
-            //    container.Register(typeof(IValidator<DataServiceRequest<TAisResponse>>),
-            //        typeof(AisDataServiceRequestValidator<TAisResponse>));
+        private void Container_ResolveUnregisteredType(object sender, UnregisteredTypeEventArgs e)
+        {
+            if(e.UnregisteredServiceType == typeof(IHttpClientFactory))
+            {
+                var serviceProvider = new ServiceCollection().AddHttpClient().BuildServiceProvider();
+                e.Register(() => serviceProvider.GetService<IHttpClientFactory>());
+            }
         }
 
         public E1ConnectorInitializer UseAisSessionProvider(IAisSessionProvider aisSessionProvider, Lifestyle? lifestyle)
         {
             _container.OverrideAisProvider(aisSessionProvider, lifestyle ?? Lifestyle.Transient);
+            return this;
+        }
+
+        public E1ConnectorInitializer RegisterDataServiceRequestHandler<TAisResponse>()
+        {
+            _container.Register(typeof(IRequestHandler<DataServiceRequest<TAisResponse>
+                , AisResponse<TAisResponse>>), typeof(AisDataServiceRequestHandler<TAisResponse>));
+
+            return this;
+        }
+
+        public E1ConnectorInitializer RegisterDataServiceValidator<TAisResponse>()
+        {
+            _container.Register(typeof(IValidator<DataServiceRequest<TAisResponse>>)
+                , typeof(AisDataServiceRequestValidator<TAisResponse>));
+
             return this;
         }
     }
