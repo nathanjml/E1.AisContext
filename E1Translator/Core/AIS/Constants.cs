@@ -8,12 +8,12 @@ namespace E1Translator.Core.AIS
     {
         public static class Endpoints
         {
-            public static string TokenRequest(string version = "v2") => $"/jderest/${version}/tokenrequest";
-            public static string ValidateToken(string version = "v2") => $"/jderest/${version}/tokenrequest/validate";
-            public static string TokenLogout(string version = "v2") => $"/jderest/${version}/tokenrequest/logout";
-            public static string DataService(string version = "v2") => $"/jderest/${version}/dataservice";
-            public static string AppStack(string version = "v2") => $"/jderest/${version}/appstack";
-            public static string Orchestrator(string version = "v2") => $"/jderest/${version}/orchestrator";
+            public static string TokenRequest(string version = "v2") => $"/jderest/{version}/tokenrequest";
+            public static string ValidateToken(string version = "v2") => $"/jderest/{version}/tokenrequest/validate";
+            public static string TokenLogout(string version = "v2") => $"/jderest/{version}/tokenrequest/logout";
+            public static string DataService(string version = "v2") => $"/jderest/{version}/dataservice";
+            public static string AppStack(string version = "v2") => $"/jderest/{version}/appstack";
+            public static string Orchestrator(string version = "v2") => $"/jderest/{version}/orchestrator";
         }
 
         public static class Actions
