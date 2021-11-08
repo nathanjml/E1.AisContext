@@ -11,6 +11,8 @@ namespace E1Translator.Core.AIS
     public class AisContext<TRequest, TAisResponse> : BaseAisContext<TRequest, AisResponse<TAisResponse>>
         where TRequest : IRequest<AisResponse<TAisResponse>>
     {
+        public bool HandleCloseApp { get; set; } = true;
+
         public AppStackBuilder GetAppStackBuilder(string formName = ""
             , string version = ""
             , string action = Actions.Open
@@ -60,20 +62,22 @@ namespace E1Translator.Core.AIS
             var response = await Mediator.HandleAsync(Request);
             await action(response.Result);
             
-            var type = Request.GetType();
-            if(type.Name == typeof(AppStackRequest<>).Name)
+            if(HandleCloseApp)
             {
-                var appStackRequest = Request as AppStackRequest<TAisResponse>;
-                var closeRequest = new CloseAppRequest(appStackRequest.AisRequest.FormName
-                    , appStackRequest.AisRequest.Version
-                    , Utilities.GetFormOidFromForm(appStackRequest.AisRequest.FormName)
-                    , appStackRequest.AisRequest.StackId
-                    , appStackRequest.AisRequest.StateId
-                    , appStackRequest.AisRequest.Rid);
+                var type = Request.GetType();
+                if (type.Name == typeof(AppStackRequest<>).Name)
+                {
+                    var appStackRequest = Request as AppStackRequest<TAisResponse>;
+                    var closeRequest = new CloseAppRequest(appStackRequest.AisRequest.FormName
+                        , appStackRequest.AisRequest.Version
+                        , Utilities.GetFormOidFromForm(appStackRequest.AisRequest.FormName)
+                        , appStackRequest.AisRequest.StackId
+                        , appStackRequest.AisRequest.StateId
+                        , appStackRequest.AisRequest.Rid);
 
-                await Mediator.HandleAsync(closeRequest);
+                    await Mediator.HandleAsync(closeRequest);
+                }
             }
-
             return this;
         }
     }
