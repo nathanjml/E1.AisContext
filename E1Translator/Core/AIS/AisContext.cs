@@ -62,7 +62,7 @@ namespace E1Translator.Core.AIS
             var response = await Mediator.HandleAsync(Request);
             await action(response.Result);
             
-            if(HandleCloseApp)
+            if(HandleCloseApp && !response.HasErrors)
             {
                 var type = Request.GetType();
                 if (type.Name == typeof(AppStackRequest<>).Name)
@@ -71,13 +71,14 @@ namespace E1Translator.Core.AIS
                     var closeRequest = new CloseAppRequest(appStackRequest.AisRequest.FormName
                         , appStackRequest.AisRequest.Version
                         , Utilities.GetFormOidFromForm(appStackRequest.AisRequest.FormName)
-                        , appStackRequest.AisRequest.StackId
-                        , appStackRequest.AisRequest.StateId
-                        , appStackRequest.AisRequest.Rid);
+                        , response.Result.StackId
+                        , response.Result.StateId
+                        , response.Result.Rid);
 
                     await Mediator.HandleAsync(closeRequest);
                 }
             }
+
             return this;
         }
     }
