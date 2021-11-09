@@ -23,8 +23,6 @@ namespace E1Translator.Core.Config
             _container = container;
             _configAssemblies = configAssemblies;
             _configuration = configuration;
-
-            _container.Register<IAisSessionProvider, DefaultAisSessionProvider>();
         }
 
         public void Initialize()
@@ -33,6 +31,7 @@ namespace E1Translator.Core.Config
             assemblies.Add(GetType().Assembly);
 
             _container.Register<IAISConfiguration>(() => _configuration);
+            _container.Register<IAisSessionProvider, DefaultAisSessionProvider>(Lifestyle.Scoped);
             _container.Register(typeof(AisAppStackRequestHandler<>), assemblies);
             _container.Register(typeof(AisContext<,>));
 
