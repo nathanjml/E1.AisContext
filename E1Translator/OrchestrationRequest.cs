@@ -114,6 +114,12 @@ namespace E1Translator
             };
 
             var session = await _tokenProvider.GetSession();
+
+            if(session == null)
+            {
+                return new Error { ErrorMessage = Errors.AuthError }.AsResponse<OrchestrationResponse>();
+            }
+
             request.Request.Token = session.Token;
             request.Request.DeviceName = session.DeviceName;
 

@@ -50,6 +50,11 @@ namespace TurnerTablet.Core.Scaffolding.Features.Ais
         {
             var session = await _tokenProvider.GetSession();
 
+            if(session == null)
+            {
+                return new Error { ErrorMessage = Errors.AuthError }.AsResponse<AisResponse<TAisResponse>>();
+            }
+
             request.AisRequest.Token = session.Token;
             request.AisRequest.DeviceName = session.DeviceName;
 

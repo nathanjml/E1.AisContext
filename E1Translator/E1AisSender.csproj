@@ -15,9 +15,9 @@
     <RepositoryUrl>https://github.com/nathanjml/E1.AisContext</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl />
-    <AssemblyVersion>1.0.7.5</AssemblyVersion>
-    <FileVersion>1.0.7.5</FileVersion>
-    <Version>1.0.7.5</Version>
+    <AssemblyVersion>1.0.7.8</AssemblyVersion>
+    <FileVersion>1.0.7.8</FileVersion>
+    <Version>1.0.7.8</Version>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />

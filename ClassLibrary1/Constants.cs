@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace E1Translator.Core.AIS
+﻿namespace E1AisSender.Common
 {
     public static class E1
     {
@@ -35,7 +31,8 @@ namespace E1Translator.Core.AIS
         }
     }
 
-    internal static class Errors {
+    internal static class Errors
+    {
         internal const string AuthError = "An error occurred during authentication";
     }
 }

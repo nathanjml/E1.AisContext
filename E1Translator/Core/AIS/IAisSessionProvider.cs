@@ -16,14 +16,14 @@ namespace E1Translator.Core.AIS
 
     public interface IAisSessionProvider
     {
-        Task<AisSessionInfo> GetSession();
+        Task<AisSessionInfo?> GetSession();
     }
 
     public class DefaultAisSessionProvider : IAisSessionProvider
     {
         private readonly IAISConfiguration _settings;
         private readonly IMediator _mediator;
-        private AisSessionInfo _session;
+        private AisSessionInfo? _session;
 
         public DefaultAisSessionProvider(IAISConfiguration settings, IMediator mediator)
         {
@@ -31,7 +31,7 @@ namespace E1Translator.Core.AIS
             _mediator = mediator;
         }
 
-        public async Task<AisSessionInfo> GetSession()
+        public async Task<AisSessionInfo?> GetSession()
         {
             var isTokenValid = await ValidateToken();
 

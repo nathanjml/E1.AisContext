@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <PackageId>E1Infrastructure.Common</PackageId>
+    <Version>1.1.0.0</Version>
+    <Authors>Nathan Murphy</Authors>
+    <Company>Turner Industries</Company>
+    <Product>E1Infrastructure.Common</Product>
+    <Copyright>Turner Industries</Copyright>
+    <PackageProjectUrl>https://github.com/nathanjml/E1.AisContext</PackageProjectUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <RepositoryUrl>https://github.com/nathanjml/E1.AisContext</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\logo.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
