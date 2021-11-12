@@ -18,6 +18,7 @@
     <None Include="..\..\..\..\Downloads\logo.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

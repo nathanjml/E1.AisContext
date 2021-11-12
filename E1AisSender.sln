@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "E1AisSender", "E1Translator
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "E1AisSender.UnitTests", "E1Translator.UnitTests\E1AisSender.UnitTests.csproj", "{5C7FE426-7D66-419B-90F1-C7585B5A8F56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{C2C7A547-3EFD-4243-8712-F4436FC931ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E1AisSender.Common", "ClassLibrary1\E1AisSender.Common.csproj", "{C2C7A547-3EFD-4243-8712-F4436FC931ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
