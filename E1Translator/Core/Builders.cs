@@ -90,20 +90,6 @@ namespace E1Translator.Core.Builders
             return Add(x => x.ReturnControlIDs = String.Join("|", ctrls));
         }
 
-        // public DataServiceBuilder ComplexQuery(Conjunction conj, params AisCondition[] conditions)
-        // {
-        //     return Add(x => x.ComplexQuery = new AisComplexQuery
-        //     {
-        //         AndOr = conj == Conjunction.Or ? "OR" : "AND",
-        //         Query = new AisQuery
-        //         {
-        //             AutoFind = true,
-        //             Condition = conditions
-        //         }
-
-        //     });
-        // }
-
         public DataServiceBuilder Query(bool autoFind
             , params AisCondition[] conditions)
         {
