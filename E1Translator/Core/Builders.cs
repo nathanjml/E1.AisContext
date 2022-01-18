@@ -8,6 +8,13 @@ using static E1Translator.Core.AIS.E1;
 
 namespace E1Translator.Core.Builders
 {
+
+    public enum Conjunction
+    {
+        And,
+        Or
+    }
+
     public abstract class AisRequestBuilder<TBuilder, TReq>
         where TReq : AisRequest, new()
         where TBuilder : AisRequestBuilder<TBuilder, TReq>
@@ -83,6 +90,20 @@ namespace E1Translator.Core.Builders
             return Add(x => x.ReturnControlIDs = String.Join("|", ctrls));
         }
 
+        // public DataServiceBuilder ComplexQuery(Conjunction conj, params AisCondition[] conditions)
+        // {
+        //     return Add(x => x.ComplexQuery = new AisComplexQuery
+        //     {
+        //         AndOr = conj == Conjunction.Or ? "OR" : "AND",
+        //         Query = new AisQuery
+        //         {
+        //             AutoFind = true,
+        //             Condition = conditions
+        //         }
+
+        //     });
+        // }
+
         public DataServiceBuilder Query(bool autoFind
             , params AisCondition[] conditions)
         {
@@ -91,6 +112,19 @@ namespace E1Translator.Core.Builders
                 AutoFind = autoFind,
                 Condition = conditions
             });
+        }
+
+        public DataServiceBuilder Query(bool autoFind
+            , Action<AisQuery> builder)
+        {
+            var query = new AisQuery
+            {
+                AutoFind = autoFind,
+            };
+
+            builder(query);
+
+            return Add(x => x.Query = query);
         }
 
         public DataServiceBuilder OrderBy(params AisOrderBy[] orderings)
