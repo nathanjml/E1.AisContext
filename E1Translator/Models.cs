@@ -34,11 +34,22 @@ namespace E1Translator
         public string Operator { get; set; }
     }
 
+
+
+    public class AisComplexQuery
+    {
+        public string AndOr { get; set; } = "AND";
+        public AisQuery? Query { get; set; }
+    }
+
+
     public class AisQuery
     {
         public bool AutoFind { get; set; } = true;
-        public IEnumerable<AisCondition> Condition { get; set; }
+        public IEnumerable<AisComplexQuery>? ComplexQuery { get; set; }
+        public IEnumerable<AisCondition>? Condition { get; set; }
     }
+
 
 
     public class AisOrderBy

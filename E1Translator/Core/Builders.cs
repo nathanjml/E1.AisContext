@@ -8,6 +8,13 @@ using static E1Translator.Core.AIS.E1;
 
 namespace E1Translator.Core.Builders
 {
+
+    public enum Conjunction
+    {
+        And,
+        Or
+    }
+
     public abstract class AisRequestBuilder<TBuilder, TReq>
         where TReq : AisRequest, new()
         where TBuilder : AisRequestBuilder<TBuilder, TReq>
@@ -91,6 +98,19 @@ namespace E1Translator.Core.Builders
                 AutoFind = autoFind,
                 Condition = conditions
             });
+        }
+
+        public DataServiceBuilder Query(bool autoFind
+            , Action<AisQuery> builder)
+        {
+            var query = new AisQuery
+            {
+                AutoFind = autoFind,
+            };
+
+            builder(query);
+
+            return Add(x => x.Query = query);
         }
 
         public DataServiceBuilder OrderBy(params AisOrderBy[] orderings)
