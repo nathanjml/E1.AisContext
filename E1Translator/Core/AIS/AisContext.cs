@@ -22,7 +22,7 @@ namespace E1Translator.Core.AIS
             , string outputType = "VERSION2") => new AppStackBuilder(formName, version, action, stackId, stateId, rid, outputType);
 
         public DataServiceBuilder GetDataServiceBuilder(string targetName
-            , string targetType = null
+            , string? targetType = null
             , string dataServiceType = "BROWSE") => new DataServiceBuilder(targetName, targetType, dataServiceType);
 
         public OrchestrationBuilder GetOrchestrationBuilder() => new OrchestrationBuilder();
@@ -38,10 +38,10 @@ namespace E1Translator.Core.AIS
             if(request.GetType() == typeof(AppStackRequest<>))
             {
                 var appStackRequest = request as AppStackRequest<AisResponse<R>>;
-                appStackRequest.AisRequest.StackId = response.StackId;
+                appStackRequest!.AisRequest.StackId = response.StackId;
                 appStackRequest.AisRequest.StateId = response.StateId;
                 appStackRequest.AisRequest.Rid = response.Rid;
-                newContext.SetRequest(appStackRequest as T);
+                newContext.SetRequest((appStackRequest as T)!);
             } else
             {
                 newContext.SetRequest(request);
@@ -50,14 +50,14 @@ namespace E1Translator.Core.AIS
             return newContext;
         }
 
-        public async override Task<BaseAisContext<T, AisResponse<R>>> Then<T, R>(Func<AisResponse<TAisResponse>, Task<T>> action) 
+        public override async Task<BaseAisContext<T, AisResponse<R>>> Then<T, R>(Func<AisResponse<TAisResponse>, Task<T>> action) 
         {
             var response = await Mediator.HandleAsync(Request);
             var result2 = await action(response.Result);
             return Next<T, R>(result2, response.Result);
         }
 
-        public async override Task<BaseAisContext<TRequest, AisResponse<TAisResponse>>> Then(Func<AisResponse<TAisResponse>, Task> action)
+        public override async Task<BaseAisContext<TRequest, AisResponse<TAisResponse>>> Then(Func<AisResponse<TAisResponse>, Task> action)
         {
             var response = await Mediator.HandleAsync(Request);
             await action(response.Result);
@@ -68,9 +68,9 @@ namespace E1Translator.Core.AIS
                 if (type.Name == typeof(AppStackRequest<>).Name)
                 {
                     var appStackRequest = Request as AppStackRequest<TAisResponse>;
-                    var closeRequest = new CloseAppRequest(appStackRequest.AisRequest.FormName
+                    var closeRequest = new CloseAppRequest(appStackRequest!.AisRequest.FormName
                         , appStackRequest.AisRequest.Version
-                        , Utilities.GetFormOidFromForm(appStackRequest.AisRequest.FormName)
+                        , Utilities.TryGetFormOid(appStackRequest.AisRequest.FormName) ?? ""
                         , response.Result.StackId
                         , response.Result.StateId
                         , response.Result.Rid);
@@ -106,7 +106,7 @@ namespace E1Translator.Core.AIS
 
         public TRequest Request { get; protected set; }
 
-        public BaseAisContext(IMediator mediator)
+        protected BaseAisContext(IMediator mediator)
         {
             Mediator = mediator;
         }

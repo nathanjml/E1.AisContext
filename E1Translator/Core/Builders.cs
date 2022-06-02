@@ -52,7 +52,7 @@ namespace E1Translator.Core.Builders
         : AisRequestBuilder<DataServiceBuilder, AisDataServiceRequest>
     {
         public DataServiceBuilder(string targetName
-            , string targetType = null
+            , string? targetType = null
             , string dataServiceType = "BROWSE")
             : base(x =>
             {

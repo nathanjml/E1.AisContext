@@ -20,8 +20,8 @@ namespace E1Translator
     public class OrchestrationRequest
             : IRequest<OrchestrationResponse>
     {
-        public OrchRequest Request { get; set; }
-        public string OrchestrationName { get; set; }
+        public OrchRequest Request { get; set; } = new OrchRequest();
+        public string OrchestrationName { get; set; } = "";
         public string Version { get; set; } = "v2";
     }
 
@@ -31,8 +31,8 @@ namespace E1Translator
 
         public List<DetailInput> DetailInputs { get; set; } = new List<DetailInput>();
 
-        public string Token { get; set; }
-        public string DeviceName { get; set; }
+        public string Token { get; set; } = "";
+        public string DeviceName { get; set; } = "";
     }
 
     public class Input
@@ -45,45 +45,45 @@ namespace E1Translator
             Value = value;
         }
 
-        public string Name { get; set; }
-        public string Value { get; set; }
+        public string Name { get; set; } = "";
+        public string Value { get; set; } = "";
     }
 
     public class DetailInput
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         public List<RepeatingInput> RepeatingInputs { get; set; } = new List<RepeatingInput>();
     }
 
     public class RepeatingInput
     {
-        public List<Input> Inputs { get; set; }
+        public List<Input> Inputs { get; set; } = new List<Input>();
     }
 
 
     public class OrchestrationResponse
     {
-        public IDictionary<string, string> Data { get; set; }
-        public IList<IDictionary<string, string>> GridRows { get; set; }
-        public OrchestrationErrorResponse Errors { get; set; }
+        public IDictionary<string, string> Data { get; set; } = new Dictionary<string, string>();
+        public IList<IDictionary<string, string>> GridRows { get; set; } = new List<IDictionary<string, string>>();
+        public OrchestrationErrorResponse Errors { get; set; } = new OrchestrationErrorResponse();
         public bool HasErrors => Errors?.Errors?.Any() ?? false;
     }
 
     public class OrchestrationErrorResponse
     {
-        public string ApplicationID { get; set; }
-        public string Title { get; set; }
-        public IEnumerable<OrchestrationMessage> Errors { get; set; }
-        public IEnumerable<OrchestrationMessage> Warnings { get; set; }
+        public string ApplicationID { get; set; } = "";
+        public string Title { get; set; } = "";
+        public IEnumerable<OrchestrationMessage> Errors { get; set; } = new List<OrchestrationMessage>();
+        public IEnumerable<OrchestrationMessage> Warnings { get; set; } = new List<OrchestrationMessage>();
     }
 
     public class OrchestrationMessage
     {
-        public string Code { get; set; }
-        public string Title { get; set; }
-        public string ErrorControl { get; set; }
-        public string Desc { get; set; }
-        public string Mobile { get; set; }
+        public string Code { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string ErrorControl { get; set; } = "";
+        public string Desc { get; set; } = "";
+        public string Mobile { get; set; } = "";
     }
 
     public class OrchestrationRequestHandler
@@ -132,16 +132,16 @@ namespace E1Translator
             var payload = new StringContent(orchRequest, Encoding.UTF8, "application/json");
 
             var response = await _http.PostAsync($"{baseUri}/{request.OrchestrationName}"
-                , payload);
+                , payload, ct);
 
             var responseContent = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                var result = ParseContent(responseContent);
-                return result.AsResponse();
-            }
 
-            return new Error { ErrorMessage = GetErrorMessage(responseContent)}.AsResponse<OrchestrationResponse>();
+            if (!response.IsSuccessStatusCode)
+                return new Error {ErrorMessage = GetErrorMessage(responseContent)}.AsResponse<OrchestrationResponse>();
+
+            var result = ParseContent(responseContent);
+            return result.AsResponse();
+
         }
 
         private OrchestrationResponse ParseContent(string content)
@@ -159,7 +159,8 @@ namespace E1Translator
             if (errorContent[0] == '{')
             {
                 var msg = JsonConvert.DeserializeObject<AisException>(errorContent);
-                return msg.Message;
+                if (msg != null)
+                    return msg.Message;
             }
 
             return "Unknown error during request";

@@ -1,5 +1,4 @@
 ﻿using E1Translator.Core.AIS;
-using E1Translator.Core.Common;
 using E1Translator.Core.Extensions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +47,7 @@ namespace E1Translator.Core.Config
             if(e.UnregisteredServiceType == typeof(IHttpClientFactory))
             {
                 var serviceProvider = new ServiceCollection().AddHttpClient().BuildServiceProvider();
-                e.Register(() => serviceProvider.GetService<IHttpClientFactory>());
+                e.Register(() => serviceProvider.GetService<IHttpClientFactory>()!);
             }
         }
 
