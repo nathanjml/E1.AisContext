@@ -55,76 +55,70 @@ namespace TurnerTablet.Core.Scaffolding.Features.Ais
                 return new Error { ErrorMessage = Errors.AuthError }.AsResponse<AisResponse<TAisResponse>>();
             }
 
-            request.AisRequest.Token = session.Token;
-            request.AisRequest.DeviceName = session.DeviceName;
+            PopulateSessionData(request, session);
 
             _http.BaseAddress = new Uri(_settings.AisBaseUrl);
 
-            var settings = new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                NullValueHandling = NullValueHandling.Ignore
-            };
-
-            var aisRequest = JsonConvert.SerializeObject(request.AisRequest
-                , Formatting.Indented
-                , settings);
+            var aisRequest = SerializeRequest(request.AisRequest);
 
             var payload = new StringContent(aisRequest, Encoding.UTF8, "application/json");
 
             var response = await _http.PostAsync(E1.Endpoints.AppStack(request.Version)
-                , payload);
+                , payload, ct);
 
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode) throw new AisErrorException(getErrorMessage(responseContent));
+
+            var result = ParseContent(responseContent);
+
+            if (result == null)
             {
-                var result = ParseContent(responseContent);
-
-                if (result == null)
-                {
-                    return (new AisResponse<TAisResponse>()).AsResponse();
-                }
-                else if (result.HasErrors)
-                {
-                    var error = new AisErrorException(GetErrorMessage(result));
-                    error.StateId = result.StateId;
-                    error.StackId = result.StackId;
-                    error.Rid = result.Rid;
-
-                    throw error;
-                }
-                else if (!request.LoadAllResults)
-                {
-                    return result.AsResponse();
-                }
-                else
-                {
-                    while (!result.HasErrors && result.DataBrowser.Data.GridData.Summary.MoreRecords)
-                    {
-                        result = CombineResults(result.DataBrowser.Data.GridData
-                            , await LoadNext(_http
-                                , result.Links.First(x => x.Rel == "next").Href));
-                    }
-
-                    if (result.HasErrors)
-                    {
-                        var error = new AisErrorException(GetErrorMessage(result));
-                        error.StateId = result.StateId;
-                        error.StackId = result.StackId;
-                        error.Rid = result.Rid;
-
-                        throw error;
-                    }
-
-                    return result.AsResponse();
-                }
+                return (new AisResponse<TAisResponse>()).AsResponse();
             }
 
-            throw new AisErrorException(getErrorMessage(responseContent));
+            if (result.HasErrors)
+            {
+                var error = new AisErrorException(GetErrorMessage(result))
+                {
+                    StateId = result.StateId,
+                    StackId = result.StackId,
+                    Rid = result.Rid
+                };
+
+                throw error;
+            }
+
+            if (!request.LoadAllResults)
+            {
+                return result.AsResponse();
+            }
+
+            while (!result.HasErrors && result.DataBrowser.Data.GridData.Summary.MoreRecords)
+            {
+                var nextResult = await LoadNext(_http, result.Links.First(x => x.Rel == "next").Href);
+                if (nextResult == null) break;
+                result = CombineResults(result.DataBrowser.Data.GridData
+                    , nextResult);
+            }
+
+            if (result.HasErrors)
+            {
+                var error = new AisErrorException(GetErrorMessage(result))
+                {
+                    StateId = result.StateId,
+                    StackId = result.StackId,
+                    Rid = result.Rid
+                };
+
+                throw error;
+            }
+
+            return result.AsResponse();
+
         }
 
-        private AisResponse<TAisResponse> CombineResults(AisGridData<TAisResponse> a
+        private static AisResponse<TAisResponse> CombineResults(AisGridData<TAisResponse> a
             , AisResponse<TAisResponse> b)
         {
             b.DataBrowser.Data.GridData.Summary.Records += a.Summary.Records;
@@ -133,14 +127,14 @@ namespace TurnerTablet.Core.Scaffolding.Features.Ais
             return b;
         }
 
-        private async Task<AisResponse<TAisResponse>> LoadNext(HttpClient client, string nextUri)
+        private static async Task<AisResponse<TAisResponse>?> LoadNext(HttpClient client, string nextUri)
         {
             var nextResponse = await client.GetAsync(nextUri);
             var content = await nextResponse.Content.ReadAsStringAsync();
-            return ParseContent(content);
+            return ParseContent(content ?? "");
         }
 
-        private AisResponse<TAisResponse> ParseContent(string content)
+        private static AisResponse<TAisResponse>? ParseContent(string content)
         {
             return JsonConvert.DeserializeObject<AisResponse<TAisResponse>>(content
                 , new JsonSerializerSettings
@@ -165,13 +159,27 @@ namespace TurnerTablet.Core.Scaffolding.Features.Ais
 
         private string GetErrorMessage(AisResponse<TAisResponse> result)
         {
-            //result.SysErrors?.ForEach(x => Log.Warning("{title}: {desc}", x.Title, x.Desc));
-            //result.DataBrowser?.Errors?.ForEach(x => Log.Warning("{error} Error Control: {control}", x.Mobile, x.ErrorControl));
-
-            return String.Join(" ",
+            return string.Join(" ",
                 Enumerable.Concat(
                     result.SysErrors?.Select(x => x.Title + ": " + x.Desc) ?? new string[] { },
                     result.DataBrowser?.Errors?.Select(x => x.Mobile) ?? new string[] { }));
+        }
+
+        private static void PopulateSessionData(AppStackRequest<TAisResponse> request, AisSessionInfo session)
+        {
+            request.AisRequest.Token = session.Token;
+            request.AisRequest.DeviceName = session.DeviceName;
+        }
+
+        private static string SerializeRequest(AisAppStackRequest aisAppStackRequest)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            return JsonConvert.SerializeObject(aisAppStackRequest, Formatting.Indented, settings);
         }
     }
 

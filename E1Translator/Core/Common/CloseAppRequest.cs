@@ -53,11 +53,7 @@ namespace E1Translator.Core.Common
                 .ActionRequest(request.FormOid)
                 .Build();
 
-            var response = await _mediator.HandleAsync(
-                new AppStackRequest<NoResponse>
-                {
-                    AisRequest = aisRequest
-                });
+            var response = await _mediator.HandleAsync(new AppStackRequest<NoResponse> { AisRequest = aisRequest }, ct).ConfigureAwait(false);
 
             return response;
         }

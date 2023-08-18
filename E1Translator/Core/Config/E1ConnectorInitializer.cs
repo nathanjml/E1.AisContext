@@ -1,11 +1,9 @@
 ﻿using E1Translator.Core.AIS;
-using E1Translator.Core.Extensions;
 using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleInjector;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using E1AisSender.Core.Common;
 using TurnerTablet.Core.Scaffolding.Features.Ais;
 using UnstableSort.Crudless.Mediator;
 
@@ -13,15 +11,17 @@ namespace E1Translator.Core.Config
 {
     public class E1ConnectorInitializer
     {
-        private readonly Container _container;
+        private readonly IIocContainer _container;
         private readonly Assembly[] _configAssemblies;
         private readonly IAISConfiguration _configuration;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public E1ConnectorInitializer(Container container, Assembly[] configAssemblies, IAISConfiguration configuration)
+        public E1ConnectorInitializer(IIocContainer container, Assembly[] configAssemblies, IAISConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _container = container;
             _configAssemblies = configAssemblies;
             _configuration = configuration;
+            _httpClientFactory = httpClientFactory;
         }
 
         public void Initialize()
@@ -30,8 +30,8 @@ namespace E1Translator.Core.Config
             assemblies.Add(GetType().Assembly);
 
             _container.Register<IAISConfiguration>(() => _configuration);
-            _container.Register<IAisSessionProvider, DefaultAisSessionProvider>(Lifestyle.Scoped);
-            _container.Register(typeof(AisAppStackRequestHandler<>), assemblies);
+            _container.RegisterScoped<IAisSessionProvider, DefaultAisSessionProvider>();
+            _container.Register(typeof(AisAppStackRequestHandler<>), assemblies.ToArray());
             _container.Register(typeof(AisContext<,>));
 
             _container.Register(typeof(IRequestHandler<,>), GetType().Assembly);
@@ -39,21 +39,12 @@ namespace E1Translator.Core.Config
             _container.Register(typeof(IValidator<>), GetType().Assembly);
             //_container.RegisterConditional(typeof(IRequestHandler<,>), typeof(CloseAppRequestHandler), c => !c.Handled);
             //_container.RegisterConditional(typeof(IRequestHandler<,>), typeof(AisAppStackRequestHandler<>), c => !c.Handled);
-            _container.ResolveUnregisteredType += Container_ResolveUnregisteredType;
+            _container.Register(() => _httpClientFactory);
         }
 
-        private void Container_ResolveUnregisteredType(object sender, UnregisteredTypeEventArgs e)
+        public E1ConnectorInitializer UseAisSessionProvider(IAisSessionProvider aisSessionProvider, Lifestyles? lifestyle)
         {
-            if(e.UnregisteredServiceType == typeof(IHttpClientFactory))
-            {
-                var serviceProvider = new ServiceCollection().AddHttpClient().BuildServiceProvider();
-                e.Register(() => serviceProvider.GetService<IHttpClientFactory>()!);
-            }
-        }
-
-        public E1ConnectorInitializer UseAisSessionProvider(IAisSessionProvider aisSessionProvider, Lifestyle? lifestyle)
-        {
-            _container.OverrideAisProvider(aisSessionProvider, lifestyle ?? Lifestyle.Transient);
+            _container.OverrideRegistration(() => aisSessionProvider, lifestyle ?? Lifestyles.Transient);
             return this;
         }
 
@@ -76,9 +67,14 @@ namespace E1Translator.Core.Config
 
     public static class E1Connector
     {
-        public static E1ConnectorInitializer CreateInitializer(Container container, IAISConfiguration configuration, Assembly[] configAssemblies)
+        public static E1ConnectorInitializer CreateInitializer(IIocContainer container, IAISConfiguration configuration, IHttpClientFactory httpClientFactory, Assembly[] configAssemblies)
         {
-            return new E1ConnectorInitializer(container, configAssemblies, configuration);
+            return new E1ConnectorInitializer(container, configAssemblies, configuration, httpClientFactory);
         }
+
+        //public static E1ConnectorInitializer CreateInitializer(IAISConfiguration configuration, IHttpClientFactory httpClientFactory, Assembly[] configAssemblies)
+        //{
+        //    return new E1ConnectorInitializer(configAssemblies, configuration, httpClientFactory);
+        //}
     }
 }

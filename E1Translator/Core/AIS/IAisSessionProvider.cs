@@ -1,8 +1,5 @@
 ﻿using E1Translator.Core.AIS.Auth;
 using E1Translator.Core.Config;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using UnstableSort.Crudless.Mediator;
 
@@ -10,8 +7,8 @@ namespace E1Translator.Core.AIS
 {
     public class AisSessionInfo
     {
-        public string Token { get; set; }
-        public string DeviceName { get; set; }
+        public string Token { get; set; } = "";
+        public string DeviceName { get; set; } = "";
     }
 
     public interface IAisSessionProvider
@@ -33,7 +30,7 @@ namespace E1Translator.Core.AIS
 
         public async Task<AisSessionInfo?> GetSession()
         {
-            var isTokenValid = await ValidateToken();
+            var isTokenValid = await ValidateToken().ConfigureAwait(false);
 
             if(!isTokenValid)
             {
@@ -41,7 +38,7 @@ namespace E1Translator.Core.AIS
                 {
                     Username = _settings.AisUsername,
                     Password = _settings.AisPassword
-                });
+                }).ConfigureAwait(false);
 
                 _session = tokenResponse.Result;
             }
@@ -57,7 +54,7 @@ namespace E1Translator.Core.AIS
                 new AisTokenValidationRequest
                 {
                     Token = _session.Token
-                });
+                }).ConfigureAwait(false);
 
             return (!validationResponse.HasErrors && validationResponse.Result);
         }
